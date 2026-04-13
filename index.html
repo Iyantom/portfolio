@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iyantom Ogari Juma — Geospatial Engineer | ArcGIS Enterprise & SaaS Solutions Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060607;
+  --bg2: #0c0c0e;
+  --bg3: #111114;
+  --card: #151518;
+  --cardH: #1a1a1e;
+  --bdr: #1e1e23;
+  --bdr2: #2a2a30;
+  --tx: #ede9e0;
+  --tx2: #a09a8d;
+  --tx3: #6b655a;
+  --gld: #c9a96e;
+  --gldDim: rgba(201,169,110,.12);
+  --gldGlow: rgba(201,169,110,.06);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --maxW: 1260px;
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background:var(--bg); color:var(--tx); font-family:var(--sans); font-weight:400; line-height:1.75; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+
+/* grain */
+body::after { content:''; position:fixed; inset:0; z-index:9999; pointer-events:none; opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+::selection { background:var(--gld); color:var(--bg); }
+
+
+/* contour topo lines */
+.contour-bg {
+  position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;
+}
+.contour-bg svg { position:absolute; width:100%; height:100%; opacity:.14; }
+.contour-bg.right svg { right:-20%; top:-10%; width:70%; height:120%; }
+.contour-bg.left svg { left:-15%; bottom:-10%; width:60%; height:120%; }
+.contour-bg.full svg { opacity:.1; }
+.hero-inner, .about-grid, .sec-hdr, .proj-grid, .certs-grid, .timeline, .tl-edu,
+.comm-content, .aff-list, #contact .rv { position:relative; z-index:1; }
+
+/* ═══ NAV ═══ */
+nav { position:fixed; top:0; left:0; right:0; z-index:1000; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 clamp(1.5rem,4vw,3rem);
+  background:rgba(6,6,7,.82); backdrop-filter:blur(24px) saturate(1.3); border-bottom:1px solid rgba(30,30,35,.6); transition:box-shadow .4s; }
+nav.scrolled { box-shadow:0 4px 40px rgba(0,0,0,.4); }
+.nav-logo { font-family:var(--serif); font-size:1.2rem; font-weight:600; color:var(--tx); letter-spacing:.02em; }
+.nav-logo span { color:var(--gld); }
+.nav-links { display:flex; gap:1.8rem; align-items:center; }
+.nav-links a { color:var(--tx2); font-size:.75rem; font-weight:500; letter-spacing:.13em; text-transform:uppercase; text-decoration:none; transition:color .3s; position:relative; }
+.nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:1px; background:var(--gld); transition:width .3s; }
+.nav-links a:hover { color:var(--tx); }
+.nav-links a:hover::after { width:100%; }
+.nav-cta { padding:.45rem 1.2rem; border:1px solid var(--gld); color:var(--gld)!important; transition:all .3s!important; }
+.nav-cta:hover { background:var(--gld)!important; color:var(--bg)!important; }
+.nav-cta::after { display:none!important; }
+.burger { display:none; cursor:pointer; flex-direction:column; gap:5px; background:none; border:none; }
+.burger span { width:22px; height:1.5px; background:var(--tx); transition:.3s; }
+
+/* ═══ HERO ═══ */
+.hero { min-height:100vh; display:flex; align-items:center; padding:0 clamp(1.5rem,4vw,3rem); position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-20%; right:-5%; width:650px; height:650px; background:radial-gradient(circle,var(--gldGlow),transparent 70%); pointer-events:none; }
+.hero::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--bdr),transparent); }
+.hero-inner { display:grid; grid-template-columns:1.1fr .9fr; gap:5rem; align-items:center; max-width:var(--maxW); margin:0 auto; width:100%; }
+.hero-tag { display:inline-flex; align-items:center; gap:.7rem; font-size:.68rem; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--gld); margin-bottom:1.8rem; opacity:0; animation:fadeUp .7s var(--ease) .3s forwards; }
+.hero-tag::before { content:''; width:28px; height:1px; background:var(--gld); }
+.hero h1 { font-family:var(--serif); font-size:clamp(2.6rem,4.8vw,4rem); font-weight:400; line-height:1.15; letter-spacing:-.01em; margin-bottom:1.6rem; opacity:0; animation:fadeUp .7s var(--ease) .5s forwards; }
+.hero h1 em { font-style:italic; color:var(--gld); }
+.hero-desc { font-size:1.02rem; color:var(--tx2); max-width:480px; margin-bottom:2.2rem; line-height:1.85; opacity:0; animation:fadeUp .7s var(--ease) .7s forwards; }
+.hero-btns { display:flex; gap:1rem; opacity:0; animation:fadeUp .7s var(--ease) .9s forwards; }
+.btn-p { padding:.8rem 2rem; background:var(--gld); color:var(--bg); font-size:.76rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; border:none; cursor:pointer; text-decoration:none; transition:all .3s; }
+.btn-p:hover { background:#d4b87a; transform:translateY(-1px); box-shadow:0 8px 24px rgba(201,169,110,.25); }
+.btn-s { padding:.8rem 2rem; background:transparent; color:var(--tx); font-size:.76rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; border:1px solid var(--bdr2); text-decoration:none; transition:all .3s; }
+.btn-s:hover { border-color:var(--tx2); background:rgba(255,255,255,.02); }
+
+/* social links */
+.hero-social { display:flex; gap:1rem; margin-top:1.8rem; opacity:0; animation:fadeUp .7s var(--ease) 1.1s forwards; }
+.hero-social a { display:flex; align-items:center; justify-content:center; width:40px; height:40px; border:1px solid var(--bdr2); color:var(--tx2); transition:all .3s; text-decoration:none; }
+.hero-social a:hover { border-color:var(--gld); color:var(--gld); background:var(--gldDim); }
+.hero-social a svg { width:18px; height:18px; fill:currentColor; }
+
+/* hero image */
+.hero-img-wrap { opacity:0; animation:fadeIn 1s var(--ease) .5s forwards; }
+.hero-img-frame { position:relative; width:100%; max-width:400px; margin-left:auto; }
+.hero-img-frame::before { content:''; position:absolute; top:-10px; right:-10px; width:100%; height:100%; border:1px solid var(--gld); opacity:.25; z-index:-1; }
+.hero-img-frame::after { content:''; position:absolute; bottom:-10px; left:-10px; width:60%; height:60%; border-bottom:1px solid var(--gld); border-left:1px solid var(--gld); opacity:.15; z-index:-1; }
+.hero-img-frame img { width:100%; aspect-ratio:4/5; object-fit:cover; object-position:top; filter:contrast(1.04); display:block; }
+
+/* ═══ SHARED ═══ */
+section { padding:clamp(4rem,8vw,7rem) clamp(1.5rem,4vw,3rem); position:relative; }
+.sec-hdr { text-align:center; margin-bottom:4rem; }
+.sec-tag { display:inline-flex; align-items:center; gap:.7rem; font-size:.68rem; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--gld); margin-bottom:1rem; }
+.sec-tag::before,.sec-tag::after { content:''; width:20px; height:1px; background:var(--gld); opacity:.5; }
+.sec-title { font-family:var(--serif); font-size:clamp(2rem,3.2vw,2.8rem); font-weight:400; }
+.sec-sub { font-size:.98rem; color:var(--tx2); max-width:560px; margin:1rem auto 0; }
+.divider { width:100%; max-width:var(--maxW); margin:0 auto; height:1px; background:linear-gradient(90deg,transparent,var(--bdr2),transparent); }
+.alt-bg { background:var(--bg2); }
+
+/* reveal */
+.rv { opacity:0; transform:translateY(22px); transition:opacity .65s var(--ease), transform .65s var(--ease); }
+.rv.vis { opacity:1; transform:none; }
+
+/* ═══ ABOUT ═══ */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4.5rem; max-width:var(--maxW); margin:0 auto; align-items:start; }
+.about-text p { color:var(--tx2); font-size:.98rem; line-height:1.9; margin-bottom:1.3rem; }
+.about-text p:first-child::first-letter { font-family:var(--serif); font-size:3rem; float:left; line-height:1; margin-right:.45rem; margin-top:.08rem; color:var(--gld); font-weight:600; }
+.about-right h3 { font-family:var(--serif); font-size:1.25rem; font-weight:500; margin-bottom:1.2rem; }
+
+/* skills */
+.skills-wrap { margin-bottom:2.5rem; }
+.sk-grid { display:flex; flex-wrap:wrap; gap:.55rem; }
+.sk { padding:.55rem .95rem; background:var(--card); border:1px solid var(--bdr); font-size:.8rem; color:var(--tx2); transition:all .3s; }
+.sk:hover { border-color:var(--gld); color:var(--gld); background:var(--gldDim); }
+
+/* stats */
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.stat { padding:1.6rem; background:var(--card); border:1px solid var(--bdr); transition:all .35s; }
+.stat:hover { border-color:var(--gld); transform:translateY(-2px); }
+.stat-n { font-family:var(--serif); font-size:1.8rem; font-weight:500; color:var(--gld); line-height:1.1; margin-bottom:.3rem; }
+.stat-l { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); font-weight:500; }
+
+/* ═══ EXPERIENCE ═══ */
+.timeline { max-width:800px; margin:0 auto; position:relative; }
+.timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,var(--gld),var(--gld),transparent); opacity:.25; }
+.tl-item { padding-left:2.5rem; margin-bottom:2.5rem; position:relative; }
+.tl-item::before { content:''; position:absolute; left:-3.5px; top:.6rem; width:8px; height:8px; border:1.5px solid var(--gld); background:var(--bg); border-radius:50%; }
+.tl-date { font-size:.72rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--gld); margin-bottom:.25rem; }
+.tl-co { font-size:.82rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--tx); margin-bottom:.15rem; }
+.tl-role { font-size:1.05rem; color:var(--tx2); font-weight:400; }
+.tl-edu { padding:2rem; background:var(--card); border:1px solid var(--bdr); border-left:2px solid var(--gld); max-width:800px; margin:2rem auto 0; }
+.tl-edu h3 { font-family:var(--serif); font-size:1.15rem; font-weight:500; margin-bottom:.2rem; }
+.tl-edu p { color:var(--tx2); font-size:.92rem; }
+.tl-edu .tl-date { margin-bottom:.5rem; }
+
+/* ═══ PROJECTS ═══ */
+.proj-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:1.5rem; max-width:var(--maxW); margin:0 auto; }
+.proj { background:var(--card); border:1px solid var(--bdr); padding:2rem 2rem 1.8rem; transition:all .4s; position:relative; overflow:hidden; }
+.proj::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,var(--gld),transparent); opacity:0; transition:opacity .4s; }
+.proj:hover { border-color:var(--bdr2); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.25); }
+.proj:hover::before { opacity:1; }
+.proj-num { font-family:var(--serif); font-size:2.2rem; font-weight:400; color:var(--gld); opacity:.25; line-height:1; margin-bottom:.8rem; }
+.proj h3 { font-family:var(--serif); font-size:1.15rem; font-weight:500; line-height:1.35; margin-bottom:.6rem; }
+.proj p { color:var(--tx2); font-size:.88rem; line-height:1.8; }
+
+/* ═══ CERTS ═══ */
+.certs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.2rem; max-width:var(--maxW); margin:0 auto; }
+.cert { display:flex; gap:1.2rem; padding:1.6rem; background:var(--card); border:1px solid var(--bdr); transition:all .35s; align-items:flex-start; }
+.cert:hover { border-color:var(--gld); transform:translateY(-2px); }
+.cert-ico { flex-shrink:0; width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:var(--gldDim); border:1px solid rgba(201,169,110,.18); }
+.cert-ico svg { width:20px; height:20px; stroke:var(--gld); fill:none; stroke-width:1.5; }
+.cert h3 { font-size:.95rem; font-weight:500; margin-bottom:.2rem; line-height:1.35; }
+.cert-org { font-size:.78rem; color:var(--gld); font-weight:500; }
+
+/* ═══ COMMUNITY ═══ */
+.comm-content { max-width:900px; margin:0 auto; }
+.comm-card { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; padding:2.5rem; background:var(--card); border:1px solid var(--bdr); }
+.comm-card h3 { font-family:var(--serif); font-size:1.3rem; font-weight:500; margin-bottom:.4rem; }
+.comm-role { font-size:.72rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--gld); margin-bottom:.8rem; }
+.comm-card p { color:var(--tx2); font-size:.92rem; line-height:1.85; }
+.comm-imgs { display:flex; flex-direction:column; gap:1rem; }
+.comm-imgs .img-placeholder { width:100%; aspect-ratio:16/10; background:var(--bg3); border:1px solid var(--bdr); display:flex; align-items:center; justify-content:center; color:var(--tx3); font-size:.8rem; }
+
+/* ═══ AFFILIATIONS ═══ */
+.aff-list { max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:1px; background:var(--bdr); border:1px solid var(--bdr); }
+.aff { display:grid; grid-template-columns:72px 1fr auto; gap:1.5rem; padding:1.8rem 2.2rem; background:var(--card); align-items:center; transition:all .3s; }
+.aff:hover { background:var(--cardH); }
+.aff-logo { width:72px; height:72px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.92); border-radius:8px; padding:8px; overflow:hidden; flex-shrink:0; }
+.aff-logo img { width:100%; height:100%; object-fit:contain; }
+.aff h3 { font-family:var(--serif); font-size:1.1rem; font-weight:500; margin-bottom:.2rem; }
+.aff-role { font-size:.86rem; color:var(--tx2); line-height:1.7; }
+.aff-badge { font-size:.72rem; color:var(--gld); letter-spacing:.08em; font-weight:600; text-transform:uppercase; white-space:nowrap; padding:.35rem .9rem; border:1px solid var(--gldDim); background:var(--gldDim); }
+
+/* ═══ CONTACT ═══ */
+#contact { text-align:center; }
+.contact-email { display:inline-block; font-family:var(--serif); font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:500; color:var(--gld); text-decoration:none; border-bottom:1px solid rgba(201,169,110,.3); padding-bottom:.15rem; margin-top:1.2rem; transition:all .3s; }
+.contact-email:hover { border-bottom-color:var(--gld); text-shadow:0 0 30px var(--gldGlow); }
+
+/* ═══ FOOTER ═══ */
+footer { padding:2rem clamp(1.5rem,4vw,3rem); border-top:1px solid var(--bdr); display:flex; justify-content:space-between; align-items:center; font-size:.76rem; color:var(--tx3); max-width:var(--maxW); margin:0 auto; }
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1024px) {
+  .hero-inner { grid-template-columns:1fr; gap:3rem; text-align:center; }
+  .hero-desc { margin-left:auto; margin-right:auto; }
+  .hero-btns { justify-content:center; }
+  .hero-img-frame { max-width:300px; margin:0 auto; }
+  .hero-tag { justify-content:center; }
+  .about-grid { grid-template-columns:1fr; gap:3rem; }
+  .comm-card { grid-template-columns:1fr; }
+}
+@media(max-width:768px) {
+  .nav-links { display:none; position:fixed; top:64px; left:0; right:0; background:rgba(6,6,7,.97); backdrop-filter:blur(20px); flex-direction:column; padding:2rem 1.5rem; gap:1.3rem; border-bottom:1px solid var(--bdr); }
+  .nav-links.open { display:flex; }
+  .burger { display:flex; }
+  .proj-grid { grid-template-columns:1fr; }
+  .certs-grid { grid-template-columns:1fr; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .aff { grid-template-columns:56px 1fr; gap:1rem; }
+  .aff-logo { width:56px; height:56px; }
+  .aff-badge { grid-column:2; }
+  footer { flex-direction:column; gap:.8rem; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Iyantom<span>.</span></a>
+  <div class="nav-links" id="navLinks">
+    <a href="#about">About</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#certs">Certifications</a>
+    <a href="#community">Community</a>
+    <a href="#affiliations">Affiliations</a>
+    <a href="#contact" class="nav-cta">Contact</a>
+  </div>
+  <button class="burger" id="burger" onclick="document.getElementById('navLinks').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="contour-bg right"><svg viewBox="0 0 900 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M860 80 C810 105 740 130 680 170 C620 210 575 255 540 310 C505 365 490 415 485 475 C480 535 492 590 518 645 C544 700 582 745 635 785 C688 825 738 850 800 870 C845 885 875 892 900 896" stroke="var(--gld)" stroke-width="1.1"/>
+<path d="M900 30 C840 58 760 88 690 132 C620 176 568 228 525 292 C482 356 462 418 455 488 C448 558 460 620 490 682 C520 744 562 795 620 840 C678 885 735 915 805 938 C858 955 890 962 920 968" stroke="var(--gld)" stroke-width="1"/>
+<path d="M820 150 C782 172 728 195 678 228 C628 261 592 302 565 352 C538 402 528 448 526 502 C524 556 535 605 558 652 C581 699 615 738 660 770 C705 802 748 825 798 840 C838 852 868 858 900 860" stroke="var(--gld)" stroke-width=".95"/>
+<path d="M790 218 C758 236 712 258 670 288 C628 318 598 355 578 400 C558 445 550 488 552 535 C554 582 565 624 586 665 C607 706 636 740 675 768 C714 796 752 815 796 828 C832 838 858 842 888 842" stroke="var(--gld)" stroke-width=".85"/>
+<path d="M768 282 C742 298 704 318 668 342 C632 366 608 398 592 438 C576 478 570 515 574 558 C578 601 590 638 610 674 C630 710 656 740 688 762 C720 784 752 798 790 808 C820 816 845 818 872 816" stroke="var(--gld)" stroke-width=".8"/>
+<path d="M752 340 C730 354 698 372 668 394 C638 416 618 444 606 478 C594 512 590 545 596 582 C602 619 614 652 632 682 C650 712 674 736 704 755 C734 774 762 786 794 792 C820 797 840 798 864 794" stroke="var(--gld)" stroke-width=".72"/>
+<path d="M742 395 C724 406 698 422 672 442 C646 462 630 486 622 516 C614 546 612 575 618 606 C624 637 636 665 654 690 C672 715 694 734 720 748 C746 762 770 770 798 774 C818 776 835 775 855 770" stroke="var(--gld)" stroke-width=".65"/>
+<path d="M738 445 C722 455 700 468 680 485 C660 502 648 524 642 550 C636 576 636 602 642 628 C648 654 660 678 676 698 C692 718 712 733 736 744 C760 755 780 760 804 762 C822 763 836 760 852 754" stroke="var(--gld)" stroke-width=".58"/>
+<path d="M740 492 C726 500 708 512 692 528 C676 544 666 562 662 585 C658 608 660 630 668 652 C676 674 688 694 704 710 C720 726 738 737 760 744 C782 751 800 753 820 750" stroke="var(--gld)" stroke-width=".52"/>
+<path d="M744 535 C734 542 718 552 706 565 C694 578 686 594 684 614 C682 634 686 652 694 670 C702 688 714 704 730 715 C746 726 762 732 780 734 C796 735 810 732 826 726" stroke="var(--gld)" stroke-width=".46"/>
+<path d="M752 572 C744 578 732 588 722 600 C712 612 706 626 706 644 C706 662 712 678 722 692 C732 706 744 716 760 722 C776 728 790 728 806 724" stroke="var(--gld)" stroke-width=".42"/>
+<path d="M762 608 C756 614 746 622 740 634 C734 646 732 658 734 672 C736 686 742 698 752 706 C762 714 774 718 788 716" stroke="var(--gld)" stroke-width=".38"/>
+</svg></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Solutions Engineer — Esri Eastern Africa</div>
+      <h1>Driving <em>ROI</em> through GIS, Integration & Client Enablement</h1>
+      <p class="hero-desc">I'm Iyantom Ogari Juma — a Geospatial Engineer and ArcGIS Enterprise & SaaS Solutions Engineer based in Nairobi, Kenya. I help organizations harness the power of GIS to drive smarter decision-making and unlock the full potential of location intelligence.</p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-p">Get in Touch</a>
+        <a href="#projects" class="btn-s">View Projects</a>
+      </div>
+      <div class="hero-social">
+        <a href="https://www.linkedin.com/in/iyantom-ogari-juma-" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://github.com/Iyantom" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+        <a href="mailto:jumaogari@gmail.com" aria-label="Email">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
+        <a href="tel:+254718521338" aria-label="Phone">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </a>
+        <a href="https://wa.me/254102233686" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="hero-img-wrap">
+      <div class="hero-img-frame">
+        <!-- DROP YOUR HEADSHOT AS: images/headshot.jpg -->
+        <img src="images/headshot.jpg" alt="Iyantom Ogari Juma" onerror="this.parentElement.style.background='linear-gradient(135deg,#151518,#1a1a1e)';this.style.display='none';">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT + SKILLS -->
+<section id="about" class="alt-bg">
+  <div class="contour-bg left"><svg viewBox="0 0 700 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-40 840 C18 812 82 778 145 732 C208 686 258 632 296 568 C334 504 355 440 358 368 C361 296 342 232 306 172 C270 112 222 68 162 35 C102 2 45 -12 -22 -18" stroke="var(--gld)" stroke-width="1.1"/>
+<path d="M-40 782 C10 758 66 728 125 688 C184 648 230 600 264 542 C298 484 318 426 320 360 C322 294 308 236 278 182 C248 128 205 88 152 58 C99 28 48 12 -14 6" stroke="var(--gld)" stroke-width="1"/>
+<path d="M-30 725 C12 705 58 680 112 645 C166 610 208 568 238 516 C268 464 284 412 286 352 C288 292 276 240 250 192 C224 144 188 108 142 82 C96 56 52 42 2 38" stroke="var(--gld)" stroke-width=".9"/>
+<path d="M-22 672 C14 655 52 635 100 605 C148 575 186 540 212 494 C238 448 252 402 254 348 C256 294 246 248 224 206 C202 164 174 132 138 110 C102 88 68 76 28 72" stroke="var(--gld)" stroke-width=".82"/>
+<path d="M-15 622 C8 608 42 592 85 568 C128 544 162 514 184 474 C206 434 218 394 220 348 C222 302 214 262 198 226 C182 190 158 162 128 144 C98 126 70 116 38 114" stroke="var(--gld)" stroke-width=".75"/>
+<path d="M-8 578 C12 566 40 552 76 532 C112 512 142 486 160 452 C178 418 188 384 190 344 C192 304 186 270 172 240 C158 210 140 188 116 172 C92 156 68 148 42 146" stroke="var(--gld)" stroke-width=".68"/>
+<path d="M0 538 C16 528 40 516 68 500 C96 484 122 462 138 434 C154 406 162 376 164 342 C166 308 162 278 150 252 C138 226 122 206 102 194 C82 182 62 176 40 174" stroke="var(--gld)" stroke-width=".6"/>
+<path d="M8 502 C22 494 42 482 64 470 C86 458 106 440 118 416 C130 392 138 368 138 340 C138 312 134 286 124 264 C114 242 100 226 84 216 C68 206 52 200 34 200" stroke="var(--gld)" stroke-width=".54"/>
+<path d="M18 468 C28 462 44 452 62 442 C80 432 94 418 104 398 C114 378 118 358 118 336 C118 314 114 294 106 276 C98 258 86 244 72 238 C58 232 46 230 30 230" stroke="var(--gld)" stroke-width=".48"/>
+<path d="M28 440 C36 435 50 426 64 418 C78 410 88 398 96 382 C104 366 106 350 104 332 C102 314 96 298 86 286 C76 274 66 266 52 262" stroke="var(--gld)" stroke-width=".42"/>
+<path d="M40 415 C46 410 56 404 68 396 C80 388 88 378 92 364 C96 350 96 338 92 324 C88 310 80 300 70 292" stroke="var(--gld)" stroke-width=".38"/>
+</svg></div>
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Background</div>
+    <h2 class="sec-title">About Me</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text rv">
+      <p>At Esri Eastern Africa, I specialize in helping organizations harness the power of GIS to drive smarter decision-making and unlock the full potential of location intelligence. With a strong foundation in Geospatial Engineering and hands-on expertise in Esri technology, I support businesses in deploying, optimizing, and leveraging ArcGIS suite of products to transform spatial data into actionable insights.</p>
+      <p>Geospatial technology is more than a science to me; it is a language of change, a way of shaping what can happen by revealing the patterns that guide our decisions and transform our communities. Whether building scalable GIS systems, automating workflows, or creating interactive platforms, I work with intention to ensure that technology serves people, not the other way around.</p>
+      <p>Leadership, to me, is about walking alongside others. I thrive on guiding teams through complex challenges, mentoring peers, and empowering organizations to not just adopt technology, but embrace it as a catalyst for growth. I believe the most meaningful role I can play is to inspire confidence in others and create solutions that outlive my individual contribution.</p>
+    </div>
+    <div class="about-right rv">
+      <div class="skills-wrap">
+        <h3>Technical Skills</h3>
+        <div class="sk-grid">
+          <span class="sk">GIS Solution Architecture</span>
+          <span class="sk">ArcGIS Enterprise</span>
+          <span class="sk">ArcGIS Products</span>
+          <span class="sk">ArcGIS Pro</span>
+          <span class="sk">ArcGIS Online</span>
+          <span class="sk">Field Maps</span>
+          <span class="sk">Survey123</span>
+          <span class="sk">Experience Builder</span>
+          <span class="sk">Web AppBuilder</span>
+          <span class="sk">ArcGIS Dashboards</span>
+          <span class="sk">Workflow Manager</span>
+          <span class="sk">GeoEvent Manager</span>
+          <span class="sk">Location Intelligence</span>
+          <span class="sk">Python</span>
+          <span class="sk">SQL</span>
+          <span class="sk">JavaScript</span>
+          <span class="sk">Portal Admin</span>
+          <span class="sk">3D Data Handling</span>
+          <span class="sk">Remote Sensing</span>
+          <span class="sk">Spatial Analysis</span>
+          <span class="sk">CAD Analysis</span>
+          <span class="sk">Data Management</span>
+          <span class="sk">Problem Solving</span>
+          <span class="sk">Critical Thinking</span>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-n">3+</div><div class="stat-l">Years at Esri EA</div></div>
+        <div class="stat"><div class="stat-n">13+</div><div class="stat-l">Client Projects</div></div>
+        <div class="stat"><div class="stat-n">B.Eng</div><div class="stat-l">Geospatial Eng.</div></div>
+        <div class="stat"><div class="stat-n">8</div><div class="stat-l">Certifications</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Career</div>
+    <h2 class="sec-title">Work Experience</h2>
+  </div>
+  <div class="timeline rv">
+    <div class="tl-item">
+      <div class="tl-date">June 2025 — Present</div>
+      <div class="tl-co">Esri Eastern Africa</div>
+      <div class="tl-role">Solutions Engineer</div>
+      <p style="color:var(--tx2);font-size:.88rem;margin-top:.4rem;line-height:1.75;">Supporting enterprise clients across Eastern Africa by designing, deploying, and configuring the full ArcGIS suite of products across desktop, mobile, on-premises, and cloud environments.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">March 2023 — September 2025 · 2 yrs 7 mos</div>
+      <div class="tl-co">Esri Eastern Africa</div>
+      <div class="tl-role">Configuration Engineer</div>
+      <p style="color:var(--tx2);font-size:.88rem;margin-top:.4rem;line-height:1.75;">Provided technical support to the Professional Services Team in the configuration of ArcGIS Products for paid services, optimizing utilization and platform performance for enterprise clients.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">December 2023 — September 2025 · 1 yr 10 mos</div>
+      <div class="tl-co">Esri Eastern Africa</div>
+      <div class="tl-role">Technical Support Engineer</div>
+      <p style="color:var(--tx2);font-size:.88rem;margin-top:.4rem;line-height:1.75;">Troubleshooting complex technical issues, answering user questions, and contributing to the optimization of ArcGIS software across the region.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">October 2022 — January 2023 · 4 mos</div>
+      <div class="tl-co">Esri Eastern Africa</div>
+      <div class="tl-role">Internship Trainee</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2022</div>
+      <div class="tl-co">Orbital Africa</div>
+      <div class="tl-role">Intern</div>
+    </div>
+  </div>
+  <div class="tl-edu rv">
+    <div class="tl-date">September 2016 — December 2023</div>
+    <h3>The Technical University of Kenya</h3>
+    <p>Bachelor of Engineering — Geospatial Engineering</p>
+    <p style="color:var(--tx3);font-size:.82rem;margin-top:.3rem;">Activities: Rotaract Club of Technical University of Kenya, Basketball</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects" class="alt-bg">
+  <div class="contour-bg full"><svg viewBox="0 0 1400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-20 295 C45 278 115 258 205 242 C295 226 365 228 445 248 C525 268 585 298 665 312 C745 326 810 318 895 295 C980 272 1048 248 1135 238 C1222 228 1288 242 1368 268 C1408 280 1430 288 1450 296" stroke="var(--gld)" stroke-width=".9"/>
+<path d="M-20 335 C52 320 128 302 222 288 C316 274 382 278 468 298 C554 318 618 345 702 356 C786 367 852 358 938 335 C1024 312 1092 290 1178 282 C1264 274 1332 286 1412 310 C1440 320 1455 326 1470 334" stroke="var(--gld)" stroke-width=".82"/>
+<path d="M-20 258 C38 238 108 215 192 198 C276 181 342 185 422 208 C502 231 562 262 642 278 C722 294 788 288 872 268 C956 248 1022 228 1108 215 C1194 202 1262 212 1342 235 C1388 248 1415 258 1445 268" stroke="var(--gld)" stroke-width=".82"/>
+<path d="M-20 375 C60 362 138 346 238 336 C338 326 408 332 498 350 C588 368 652 392 738 400 C824 408 892 398 978 378 C1064 358 1132 340 1222 332 C1312 324 1378 334 1448 355" stroke="var(--gld)" stroke-width=".72"/>
+<path d="M-20 222 C32 200 98 178 178 162 C258 146 322 152 398 172 C474 192 532 222 608 240 C684 258 748 252 828 235 C908 218 972 198 1055 185 C1138 172 1202 178 1282 198 C1335 212 1372 225 1415 238" stroke="var(--gld)" stroke-width=".72"/>
+<path d="M-20 412 C68 402 148 388 252 380 C356 372 425 380 518 395 C611 410 678 430 765 435 C852 440 918 432 1005 415 C1092 398 1158 382 1248 376 C1338 370 1398 378 1450 392" stroke="var(--gld)" stroke-width=".62"/>
+<path d="M-20 188 C24 164 90 140 165 125 C240 110 302 116 372 135 C442 154 498 182 572 200 C646 218 708 214 785 198 C862 182 922 162 1002 150 C1082 138 1142 144 1218 162 C1278 176 1318 190 1362 205" stroke="var(--gld)" stroke-width=".62"/>
+<path d="M-20 448 C78 440 162 428 268 422 C374 416 445 424 542 438 C639 452 708 468 798 470 C888 472 955 464 1042 448 C1129 432 1195 420 1285 415 C1375 410 1418 416 1455 425" stroke="var(--gld)" stroke-width=".52"/>
+<path d="M-20 155 C16 132 78 108 148 95 C218 82 278 88 345 105 C412 122 465 148 535 168 C605 188 665 185 738 172 C811 159 868 142 945 130 C1022 118 1078 122 1152 138 C1212 150 1252 165 1298 180" stroke="var(--gld)" stroke-width=".52"/>
+</svg></div>
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Portfolio</div>
+    <h2 class="sec-title">Project Highlights</h2>
+    <p class="sec-sub">Enterprise GIS deployments, platform configurations, and spatial solutions delivered across East Africa.</p>
+  </div>
+  <div class="proj-grid">
+    <div class="proj rv">
+      <div class="proj-num">01</div>
+      <h3>Ethiopia Electric Power (EEP)</h3>
+      <p>Developed and deployed GIS tools tailored to user requirements and facilitated the integration of the ArcGIS platform into EEP's operational workflows, enabling users to leverage GIS for their daily utility functions.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">02</div>
+      <h3>Ethiopia Space Science & Geospatial Institute (ESSGi)</h3>
+      <p>Led the deployment and configuration of ArcGIS Enterprise infrastructure, overseeing GIS desktop setup, license management, and database integration while ensuring secure and efficient portal access and providing guidance on system usage to enhance organizational workflows.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">03</div>
+      <h3>Kwale Water & Sewerage Company</h3>
+      <p>Managed the full deployment and upgrade of ArcGIS Enterprise for Kwale Water, importing the organization's data and creating visualizations that supported operational planning, monitoring, and reporting.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">04</div>
+      <h3>Geothermal Development Company (GDC)</h3>
+      <p>Facilitated the development and deployment of customized GIS workflows and applications for GDC, while training staff and ensuring every solution aligned with operational needs.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">05</div>
+      <h3>Rural Electrification & Renewable Energy Corp (REREC)</h3>
+      <p>Managed the deployment of GIS infrastructure for REREC, assessed user requirements, and developed tailored data collection and visualization workflows that improved operational efficiency.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">06</div>
+      <h3>Taita Taveta Water & Sewerage Company (TAVEVO)</h3>
+      <p>Configured the ArcGIS Enterprise system, developed data schemas and validation rules to ensure network data integrity, deployed mobile applications for field data collection, and customized dashboards to support efficient water network operations and customer complaint management.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">07</div>
+      <h3>Malindi Water & Sewerage Company (MAWASCO)</h3>
+      <p>Led the technical deployment and configuration of the GIS platform, designed and implemented tailored solutions and tools for departmental use, and provided capacity-building training to county staff to ensure effective adoption of the system.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">08</div>
+      <h3>Kenya Electricity Generating Company (KenGen)</h3>
+      <p>Responsible for collecting and managing geospatial data within a structured geodatabase and developing maps to support KenGen's operations, generating spatial insights to inform energy planning and reporting activities.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">09</div>
+      <h3>DAWASA — Dar es Salaam Water & Sewerage Authority</h3>
+      <p>Led the deployment and configuration of ArcGIS Enterprise components, installed and licensed ArcGIS Desktop software, and managed portal access and permissions to ensure secure and efficient GIS operations.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">10</div>
+      <h3>Mombasa Water Supply & Sanitation Company (MOWASSCO)</h3>
+      <p>Led the configuration and deployment of ArcGIS Enterprise, developed GIS web tools, and enabled mobile workflows for field teams. Also customized dashboards and integrated data systems to enhance operational efficiency and service delivery.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">11</div>
+      <h3>Nakuru Water Sewerage & Sanitation Company (NAWASSCO)</h3>
+      <p>Deployed and configured ArcGIS Enterprise, developed schemas and relationships, set up mobile data collection workflows, and customized departmental dashboards.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">12</div>
+      <h3>Tanzania Electric Supply Company (TANESCO)</h3>
+      <p>Led the technical enablement and user adoption of ArcGIS technology through targeted training, workflow configuration, and advanced demonstrations. Delivered expert guidance on spatial analysis, 3D data handling, and enterprise GIS workflows using ArcGIS Pro, Workflow Manager, Field Maps, and GeoEvent Manager. Collaborated with technical teams to enhance operational efficiency and ensure seamless integration of GIS into existing utility processes.</p>
+    </div>
+    <div class="proj rv">
+      <div class="proj-num">13</div>
+      <h3>Wajir County Government</h3>
+      <p>Conducted topographic surveys and performed CAD analysis, creating a terrain model to support dam feasibility studies.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CERTIFICATIONS -->
+<section id="certs">
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Credentials</div>
+    <h2 class="sec-title">Certifications</h2>
+  </div>
+  <div class="certs-grid">
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_cartography.jpg" alt="Cartography Certificate" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>Cartography MOOC</h3>
+        <div class="cert-org">Esri</div>
+      </div>
+    </div>
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_spatial_data_science.jpg" alt="Spatial Data Science Certificate" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>Spatial Data Science: The New Frontier in Analytics</h3>
+        <div class="cert-org">Esri</div>
+      </div>
+    </div>
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_imagery.jpg" alt="Imagery in Action Certificate" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>Imagery in Action MOOC</h3>
+        <div class="cert-org">Esri</div>
+      </div>
+    </div>
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_climate_action.jpg" alt="GIS for Climate Action Certificate" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>GIS for Climate Action MOOC</h3>
+        <div class="cert-org">Esri</div>
+      </div>
+    </div>
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_enterprise_deployment.jpg" alt="ArcGIS Enterprise Deployment Principles" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>ArcGIS Enterprise Deployment Principles</h3>
+        <div class="cert-org">Esri</div>
+      </div>
+    </div>
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_project_management.jpg" alt="Project Management Foundations" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>Project Management Foundations</h3>
+        <div class="cert-org">LinkedIn Learning</div>
+      </div>
+    </div>
+    <div class="cert rv" style="flex-direction:column;gap:.8rem;">
+      <img src="images/cert_mckinsey_forward.jpg" alt="McKinsey.org Forward Program" style="width:100%;border-radius:4px;border:1px solid var(--bdr);">
+      <div>
+        <h3>McKinsey.org Forward Program</h3>
+        <div class="cert-org">McKinsey & Company</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMMUNITY SERVICE -->
+<section id="community" class="alt-bg">
+  <div class="contour-bg left"><svg viewBox="0 0 700 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M-30 820 C20 800 80 770 140 730 C200 690 245 640 280 580 C315 520 335 460 340 390 C345 320 330 260 300 200 C270 140 230 95 175 60 C120 25 65 10 -10 5" stroke="var(--gld)" stroke-width="1"/>
+<path d="M-30 880 C30 855 100 825 170 780 C240 735 290 680 330 615 C370 550 390 485 392 410 C394 335 375 270 340 205 C305 140 255 90 195 55 C135 20 70 0 -10 -10" stroke="var(--gld)" stroke-width=".9"/>
+<path d="M-30 760 C10 745 60 720 115 685 C170 650 210 605 240 550 C270 495 285 440 288 375 C291 310 278 255 252 200 C226 145 190 105 145 75 C100 45 55 30 0 25" stroke="var(--gld)" stroke-width=".85"/>
+<path d="M-30 700 C5 688 48 670 95 640 C142 610 180 572 208 525 C236 478 250 430 252 375 C254 320 244 272 222 225 C200 178 170 142 132 115 C94 88 58 72 15 65" stroke="var(--gld)" stroke-width=".8"/>
+<path d="M-30 645 C-2 636 35 620 75 595 C115 570 148 540 172 500 C196 460 210 418 212 370 C214 322 206 280 188 240 C170 200 146 168 114 145 C82 122 52 110 18 105" stroke="var(--gld)" stroke-width=".75"/>
+<path d="M-20 595 C2 588 30 575 60 555 C90 535 115 510 135 478 C155 446 166 412 168 372 C170 332 164 298 150 264 C136 230 118 204 94 184 C70 164 48 152 22 148" stroke="var(--gld)" stroke-width=".7"/>
+<path d="M-10 548 C8 543 30 532 54 516 C78 500 98 480 114 452 C130 424 138 396 140 362 C142 328 136 300 124 272 C112 244 96 222 76 206 C56 190 38 180 16 178" stroke="var(--gld)" stroke-width=".6"/>
+<path d="M0 505 C14 500 32 492 52 478 C72 464 88 446 100 424 C112 402 118 378 118 352 C118 326 114 302 104 280 C94 258 80 242 64 230 C48 218 34 212 18 210" stroke="var(--gld)" stroke-width=".55"/>
+<path d="M12 468 C22 464 36 456 50 445 C64 434 76 420 84 402 C92 384 96 366 96 344 C96 322 92 304 84 286 C76 268 66 256 52 246 C38 236 28 232 14 230" stroke="var(--gld)" stroke-width=".5"/>
+<path d="M24 435 C32 432 42 425 54 416 C66 407 74 396 80 382 C86 368 88 354 86 338 C84 322 80 308 72 296 C64 284 56 276 44 270" stroke="var(--gld)" stroke-width=".45"/>
+</svg></div>
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Impact</div>
+    <h2 class="sec-title">Community Service</h2>
+  </div>
+  <div class="comm-content">
+    <div class="comm-card rv">
+      <div>
+        <h3>Mugumoini Children's Home Visit</h3>
+        <div class="comm-role">Rotaract Club of TUK — Volunteer</div>
+        <p>Organized and participated in a community outreach visit to Mugumoini Children's Home alongside fellow Rotaract Club members. The visit included recreational activities with the children, donations of essential supplies, and spending quality time to support the children's emotional wellbeing.</p>
+      </div>
+      <div class="comm-imgs">
+        <!-- DROP YOUR PHOTOS AS: images/community1.jpg and images/community2.jpg -->
+        <img src="images/community1.jpg" alt="Mugumoini Children's Home — Outdoor Activities" style="width:100%;aspect-ratio:16/10;object-fit:cover;border:1px solid var(--bdr);" onerror="this.style.background='var(--bg3)';this.style.display='flex';">
+        <img src="images/community2.jpg" alt="Community Group Visit" style="width:100%;aspect-ratio:16/10;object-fit:cover;border:1px solid var(--bdr);" onerror="this.style.background='var(--bg3)';this.style.display='flex';">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;">
+      <div class="comm-card rv" style="display:block;">
+        <h3>Professional & Leadership Director</h3>
+        <div class="comm-role">Rotaract Club of TUK · District 9212 — Jul 2021 – Jul 2022</div>
+        <p>Helped in engaging industry leads and companies and social welfare organizations with the students and members of Technical University of Kenya. Focused on environment and professional development initiatives.</p>
+      </div>
+      <div class="comm-card rv" style="display:block;">
+        <h3>OpenStreetMap Mapper</h3>
+        <div class="comm-role">Kenya Red Cross — Volunteer</div>
+        <p>Worked on updating OpenStreetMap data at Kenya Red Cross, contributing to humanitarian mapping efforts that support disaster preparedness and community resilience across Kenya.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AFFILIATIONS -->
+<section id="affiliations">
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Network</div>
+    <h2 class="sec-title">Professional Affiliations</h2>
+  </div>
+  <div class="aff-list">
+    <div class="aff rv">
+      <div class="aff-logo">
+        <!-- DROP AS: images/esri-ea.png -->
+        <img src="images/esri-ea.png" alt="Esri Eastern Africa" onerror="this.parentElement.innerHTML='🌍';">
+      </div>
+      <div>
+        <h3>Esri Eastern Africa</h3>
+        <div class="aff-role">Solution Engineer — Enterprise GIS platform deployment, client-facing technical solutions, and spatial technology enablement across the East African region.</div>
+      </div>
+      <span class="aff-badge">Current</span>
+    </div>
+    <div class="aff rv">
+      <div class="aff-logo">
+        <!-- DROP AS: images/esri.png -->
+        <img src="images/esri.png" alt="Esri" onerror="this.parentElement.innerHTML='🌐';">
+      </div>
+      <div>
+        <h3>Esri (Global)</h3>
+        <div class="aff-role">Certified professional within the Esri ecosystem — trained in enterprise deployment, spatial analytics, and platform administration.</div>
+      </div>
+      <span class="aff-badge">Active</span>
+    </div>
+    <div class="aff rv">
+      <div class="aff-logo">
+        <!-- DROP AS: images/tuk.png -->
+        <img src="images/tuk.png" alt="Technical University of Kenya" onerror="this.parentElement.innerHTML='🎓';">
+      </div>
+      <div>
+        <h3>Technical University of Kenya</h3>
+        <div class="aff-role">Alumni — Bachelor of Engineering in Geospatial Engineering. Contributed to the university community through academic and extracurricular engagement.</div>
+      </div>
+      <span class="aff-badge">Alumni</span>
+    </div>
+    <div class="aff rv">
+      <div class="aff-logo">
+        <!-- DROP AS: images/rotary.png -->
+        <img src="images/rotary.png" alt="Rotary International" onerror="this.parentElement.innerHTML='⚙️';">
+      </div>
+      <div>
+        <h3>Rotary International</h3>
+        <div class="aff-role">Affiliated through community service, youth leadership programs, and collaborative civic projects aligned with Rotary's mission of service above self.</div>
+      </div>
+      <span class="aff-badge">Member</span>
+    </div>
+    <div class="aff rv">
+      <div class="aff-logo">
+        <!-- DROP AS: images/rotaract.png -->
+        <img src="images/rotaract.png" alt="Rotaract Club of TUK" onerror="this.parentElement.innerHTML='🔄';">
+      </div>
+      <div>
+        <h3>Rotaract Club of Technical University of Kenya</h3>
+        <div class="aff-role">Former Professional & Leadership Director (Jul 2021 – Jul 2022). Engaged industry leads, companies, and social welfare organizations with TUK students and members.</div>
+      </div>
+      <span class="aff-badge">Active</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contour-bg right"><svg viewBox="0 0 900 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M820 100 C780 120 720 135 660 160 C600 185 560 220 520 270 C480 320 460 370 450 430 C440 490 445 540 460 600 C475 660 500 710 540 760 C580 810 630 850 690 880 C750 910 800 920 860 925" stroke="var(--gld)" stroke-width="1"/>
+<path d="M850 60 C800 85 730 100 660 130 C590 160 540 200 490 250 C440 300 410 360 395 430 C380 500 385 560 405 630 C425 700 460 755 510 810 C560 865 620 905 690 930 C760 955 820 965 890 965" stroke="var(--gld)" stroke-width=".9"/>
+<path d="M780 160 C750 175 700 190 650 210 C600 230 565 260 535 305 C505 350 490 400 485 460 C480 520 490 570 510 625 C530 680 560 725 600 765 C640 805 685 835 740 855 C795 875 840 880 890 880" stroke="var(--gld)" stroke-width=".85"/>
+<path d="M740 220 C715 235 675 250 635 270 C595 290 565 320 545 360 C525 400 515 445 515 500 C515 555 525 600 545 650 C565 700 595 740 635 775 C675 810 715 835 765 845 C815 855 850 855 890 850" stroke="var(--gld)" stroke-width=".8"/>
+<path d="M710 290 C690 300 660 315 630 335 C600 355 580 380 565 415 C550 450 545 490 548 535 C551 580 562 620 580 660 C598 700 625 735 660 760 C695 785 730 800 770 808 C810 816 840 815 875 810" stroke="var(--gld)" stroke-width=".75"/>
+<path d="M690 360 C675 370 650 385 625 400 C600 415 585 440 575 470 C565 500 562 535 567 570 C572 605 583 640 600 670 C617 700 640 725 670 745 C700 765 730 775 765 780 C800 785 825 782 855 775" stroke="var(--gld)" stroke-width=".7"/>
+<path d="M680 420 C668 428 648 440 628 455 C608 470 595 492 588 518 C581 544 580 572 585 602 C590 632 600 658 616 682 C632 706 652 726 678 740 C704 754 728 762 756 764 C784 766 806 762 830 754" stroke="var(--gld)" stroke-width=".65"/>
+<path d="M678 475 C669 482 654 492 638 505 C622 518 613 536 608 558 C603 580 603 604 608 628 C613 652 622 674 636 694 C650 714 668 730 690 740 C712 750 734 756 758 756 C782 756 800 750 822 740" stroke="var(--gld)" stroke-width=".6"/>
+<path d="M682 525 C676 530 664 540 650 550 C636 560 628 576 625 595 C622 614 624 634 630 654 C636 674 646 692 660 706 C674 720 690 730 710 736 C730 742 748 742 768 738" stroke="var(--gld)" stroke-width=".55"/>
+<path d="M692 568 C688 572 678 580 668 590 C658 600 652 614 650 630 C648 646 652 662 658 678 C664 694 674 706 688 716 C702 726 716 730 732 730 C748 730 760 726 775 718" stroke="var(--gld)" stroke-width=".5"/>
+<path d="M705 605 C700 610 692 618 684 628 C676 638 672 650 672 664 C672 678 676 692 684 704 C692 716 702 724 716 728 C730 732 742 730 756 724" stroke="var(--gld)" stroke-width=".45"/>
+<path d="M718 638 C714 642 708 650 702 658 C696 666 694 676 696 688 C698 700 704 710 714 718 C724 726 734 728 746 724" stroke="var(--gld)" stroke-width=".4"/>
+</svg></div>
+  <div class="sec-hdr rv">
+    <div class="sec-tag">Connect</div>
+    <h2 class="sec-title">Let's Work Together</h2>
+    <p class="sec-sub">Open to collaborations, consulting, and conversations about geospatial technology and community impact.</p>
+  </div>
+  <div class="rv" style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;">
+    <a href="mailto:jumaogari@gmail.com" class="contact-email">jumaogari@gmail.com</a>
+    <div style="display:flex;gap:1.5rem;margin-top:.5rem;">
+      <a href="https://www.linkedin.com/in/iyantom-ogari-juma-" target="_blank" rel="noopener" style="color:var(--tx2);font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bdr2);padding-bottom:2px;transition:all .3s;">LinkedIn</a>
+      <a href="https://github.com/Iyantom" target="_blank" rel="noopener" style="color:var(--tx2);font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bdr2);padding-bottom:2px;transition:all .3s;">GitHub</a>
+      <a href="tel:+254718521338" style="color:var(--tx2);font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bdr2);padding-bottom:2px;transition:all .3s;">+254 718 521 338</a>
+      <a href="https://wa.me/254102233686" target="_blank" rel="noopener" style="color:var(--tx2);font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--bdr2);padding-bottom:2px;transition:all .3s;">WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>&copy; 2026 Iyantom Ogari Juma</span>
+  <div style="display:flex;gap:1.5rem;align-items:center;">
+    <a href="https://www.linkedin.com/in/iyantom-ogari-juma-" target="_blank" rel="noopener" style="color:var(--tx3);transition:color .3s;">LinkedIn</a>
+    <a href="https://github.com/Iyantom" target="_blank" rel="noopener" style="color:var(--tx3);transition:color .3s;">GitHub</a>
+    <a href="mailto:jumaogari@gmail.com" style="color:var(--tx3);transition:color .3s;">Email</a>
+    <a href="tel:+254718521338" style="color:var(--tx3);transition:color .3s;">+254 718 521 338</a>
+  </div>
+  <span>Solutions Engineer · Esri Eastern Africa · Nairobi, Kenya</span>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold:.08, rootMargin:'0px 0px -30px 0px' });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', scrollY > 40);
+});
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+});
+</script>
+</body>
+</html>
