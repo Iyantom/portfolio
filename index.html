@@ -158,8 +158,8 @@ section { padding:clamp(4rem,8vw,7rem) clamp(1.5rem,4vw,3rem); position:relative
 .cert-org { font-size:.78rem; color:var(--gld); font-weight:500; }
 
 /* ═══ COMMUNITY ═══ */
-.comm-content { max-width:900px; margin:0 auto; }
-.comm-card { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; padding:2.5rem; background:var(--card); border:1px solid var(--bdr); }
+.comm-content { max-width:980px; margin:0 auto; }
+.comm-card { display:block; padding:2.5rem; background:var(--card); border:1px solid var(--bdr); }
 .comm-card h3 { font-family:var(--serif); font-size:1.3rem; font-weight:500; margin-bottom:.4rem; }
 .comm-role { font-size:.72rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--gld); margin-bottom:.8rem; }
 .comm-card p { color:var(--tx2); font-size:.92rem; line-height:1.85; }
@@ -209,6 +209,8 @@ footer { padding:2rem clamp(1.5rem,4vw,3rem); border-top:1px solid var(--bdr); d
   .aff-logo { width:56px; height:56px; }
   .aff-badge { grid-column:2; }
   footer { flex-direction:column; gap:.8rem; text-align:center; }
+  #community .comm-card > div > div[style*="repeat(3,1fr)"] { grid-template-columns:1fr !important; }
+  #community .comm-content > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
 }
 </style>
 </head>
@@ -572,11 +574,20 @@ footer { padding:2rem clamp(1.5rem,4vw,3rem); border-top:1px solid var(--bdr); d
         <h3>Mugumoini Children's Home Visit</h3>
         <div class="comm-role">Rotaract Club of TUK — Volunteer</div>
         <p>Organized and participated in a community outreach visit to Mugumoini Children's Home alongside fellow Rotaract Club members. The visit included recreational activities with the children, donations of essential supplies, and spending quality time to support the children's emotional wellbeing.</p>
-      </div>
-      <div class="comm-imgs">
-        <!-- DROP YOUR PHOTOS AS: images/community1.jpg and images/community2.jpg -->
-        <img src="images/community1.jpg" alt="Mugumoini Children's Home — Outdoor Activities" style="width:100%;aspect-ratio:16/10;object-fit:cover;border:1px solid var(--bdr);" onerror="this.style.background='var(--bg3)';this.style.display='flex';">
-        <img src="images/community2.jpg" alt="Community Group Visit" style="width:100%;aspect-ratio:16/10;object-fit:cover;border:1px solid var(--bdr);" onerror="this.style.background='var(--bg3)';this.style.display='flex';">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem;">
+          <div style="padding:1rem;background:var(--bg3);border:1px solid var(--bdr);">
+            <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gld);margin-bottom:.25rem;">Focus</div>
+            <div style="font-size:.86rem;color:var(--tx2);line-height:1.6;">Children's welfare and emotional support</div>
+          </div>
+          <div style="padding:1rem;background:var(--bg3);border:1px solid var(--bdr);">
+            <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gld);margin-bottom:.25rem;">Contribution</div>
+            <div style="font-size:.86rem;color:var(--tx2);line-height:1.6;">Donations, outreach planning, and participation</div>
+          </div>
+          <div style="padding:1rem;background:var(--bg3);border:1px solid var(--bdr);">
+            <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gld);margin-bottom:.25rem;">Context</div>
+            <div style="font-size:.86rem;color:var(--tx2);line-height:1.6;">Rotaract-led community service initiative</div>
+          </div>
+        </div>
       </div>
     </div>
 
